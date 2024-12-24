@@ -91,28 +91,24 @@
     </div>
 
     <script>
-        // Kullanıcıya yazılacak özel komutlar
-        let customCommands = {};
+        let customCommands = JSON.parse(localStorage.getItem('customCommands')) || {};
 
-        // Şifre
         const developerPassword = "1234";
 
         document.getElementById('input').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 let command = event.target.value.trim().toLowerCase();
                 processCommand(command);
-                event.target.value = ''; // Input'u temizle
+                event.target.value = '';
             }
         });
 
         function processCommand(command) {
             const output = document.getElementById('output');
 
-            // Çıkış komutu
             if (command === "exit") {
                 output.innerHTML += "<div>Terminal kapatılıyor...</div>";
             }
-            // Help komutu
             else if (command === "help") {
                 output.innerHTML += "<div>Kullanılabilir Komutlar:</div>";
                 output.innerHTML += "<div>  - help: Bu menüyü gösterir.</div>";
@@ -120,24 +116,19 @@
                 output.innerHTML += "<div>  - exit: Terminalden çıkmanıza olanak sağlar.</div>";
                 output.innerHTML += "<div>  - geliştirici: Geliştirici menüsünü açar.</div>";
             }
-            // Clear komutu
             else if (command === "clear") {
                 output.innerHTML = "";
             }
-            // Geliştirici komutu
             else if (command === "geliştirici") {
                 authenticate();
             }
-            // Özel komutları kontrol et
             else if (customCommands[command]) {
                 output.innerHTML += `<div>${customCommands[command]}</div>`;
             }
-            // Geçersiz komut
             else {
                 output.innerHTML += `<div>Komut bulunamadı: ${command}</div>`;
             }
 
-            // Çıktıyı kaydet
             output.scrollTop = output.scrollHeight;
         }
 
@@ -163,6 +154,9 @@
             let commandName = prompt("Yeni komut ismini girin:");
             let commandResponse = prompt(`${commandName} komutunun çıktısı ne olsun?`);
             customCommands[commandName.toLowerCase()] = commandResponse;
+
+            localStorage.setItem('customCommands', JSON.stringify(customCommands));
+
             alert(`'${commandName}' komutu başarıyla eklendi!`);
         }
 
