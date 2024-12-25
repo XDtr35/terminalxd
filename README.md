@@ -70,6 +70,33 @@
         .terminal-input button:hover {
             background-color: #444;
         }
+
+        .button-back {
+            background-color: #555;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button-back:hover {
+            background-color: #666;
+        }
+
+        .command-list {
+            background-color: #222;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .command-item {
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .command-item:hover {
+            color: #00ff00;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +146,14 @@
                 authenticate();
             } else if (customCommands[command]) {
                 output.innerHTML += `<div>${customCommands[command]}</div>`;
+            } else if (command === "ls") {
+                output.innerHTML += `<div>Dosyalar: /home, /root, /user</div>`;
+            } else if (command === "pwd") {
+                output.innerHTML += `<div>/home/user</div>`;
+            } else if (command === "cd") {
+                output.innerHTML += `<div>Geçerli dizin değiştirilemez.</div>`;
+            } else if (command === "termux") {
+                output.innerHTML += `<div>Termux: Paket yöneticisi ile uygulamaları yükleyebilirsiniz.</div>`;
             } else {
                 output.innerHTML += `<div>Komut bulunamadı: ${command}</div>`;
             }
@@ -142,7 +177,8 @@
                 "1. Yeni komut ekle\n" +
                 "2. Komut sil\n" +
                 "3. Mevcut komutları göster\n" +
-                "Seçiminizi yapın (1, 2 veya 3):"
+                "4. Geri\n" +
+                "Seçiminizi yapın (1, 2, 3 veya 4):"
             );
 
             if (action === "1") {
@@ -167,14 +203,24 @@
                     alert("Silmek istediğiniz komut bulunamadı.");
                 }
             } else if (action === "3") {
-                let commandsList = "Mevcut Komutlar:\n";
-                for (let command in customCommands) {
-                    commandsList += `- ${command}\n`;
-                }
-                alert(commandsList || "Hiç komut eklenmemiş.");
+                showCommandsList();
+            } else if (action === "4") {
+                alert("Geri gidiliyor.");
+                return;
             } else {
                 alert("Geçersiz seçim. Geliştirici menüsünden çıkılıyor.");
             }
+        }
+
+        function showCommandsList() {
+            const output = document.getElementById('output');
+            let commandsList = "Mevcut Komutlar:\n";
+            for (let command in customCommands) {
+                commandsList += `- ${command}\n`;
+            }
+
+            output.innerHTML += `<div>${commandsList || "Hiç komut eklenmemiş."}</div>`;
+            output.scrollTop = output.scrollHeight;
         }
     </script>
 </body>
