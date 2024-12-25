@@ -137,7 +137,13 @@
         }
 
         function showDeveloperMenu() {
-            const action = prompt("Geliştirici menüsü:\n1. Yeni komut ekle\n2. Komut sil\nSeçiminizi yapın (1 veya 2):");
+            const action = prompt(
+                "Geliştirici menüsü:\n" +
+                "1. Yeni komut ekle\n" +
+                "2. Komut sil\n" +
+                "3. Mevcut komutları göster\n" +
+                "Seçiminizi yapın (1, 2 veya 3):"
+            );
 
             if (action === "1") {
                 const commandName = prompt("Yeni komut ismini girin:");
@@ -160,6 +166,12 @@
                 } else {
                     alert("Silmek istediğiniz komut bulunamadı.");
                 }
+            } else if (action === "3") {
+                let commandsList = "Mevcut Komutlar:\n";
+                for (let command in customCommands) {
+                    commandsList += `- ${command}\n`;
+                }
+                alert(commandsList || "Hiç komut eklenmemiş.");
             } else {
                 alert("Geçersiz seçim. Geliştirici menüsünden çıkılıyor.");
             }
