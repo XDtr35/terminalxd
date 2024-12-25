@@ -3,171 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal Uygulaması</title>
+    <title>Terminal - HTML Versiyon</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
-            color: #fff;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            font-family: monospace;
+            background-color: #1e1e1e;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
         .terminal {
             width: 80%;
             max-width: 800px;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
+            background-color: #000;
+            border-radius: 5px;
+            overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
         }
 
-        #output {
+        .terminal-header {
+            background-color: #333;
+            padding: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .terminal-output {
             height: 300px;
-            overflow-y: auto;
             background-color: #111;
             padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border-bottom: 2px solid #444;
         }
 
-        #input {
+        .terminal-input {
+            display: flex;
+        }
+
+        .terminal-input input {
             width: 100%;
             padding: 10px;
-            font-size: 18px;
+            font-size: 16px;
             color: #fff;
-            background-color: #444;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .developer-menu {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: #222;
-            padding: 20px;
-            border-radius: 10px;
-            color: #fff;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border: none;
+            outline: none;
+            border-radius: 0 0 0 5px;
         }
 
-        .developer-menu button {
-            background-color: #444;
-            color: #fff;
+        .terminal-input button {
             padding: 10px;
-            margin: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #333;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
+            border-radius: 0 0 5px 0;
         }
 
-        .developer-menu button:hover {
-            background-color: #666;
+        .terminal-input button:hover {
+            background-color: #444;
         }
     </style>
 </head>
 <body>
-
     <div class="terminal">
-        <div class="output" id="output"></div>
-        <input type="text" id="input" placeholder="Komut girin..." autofocus>
-    </div>
-
-    <div id="developer-menu" class="developer-menu">
-        <h3>Geliştirici Menüsü</h3>
-        <button onclick="addCommand()">Yeni Komut Ekle</button>
-        <button onclick="viewCommands()">Mevcut Komutları Gör</button>
-        <button onclick="exitDeveloperMenu()">Çıkış</button>
+        <div class="terminal-header">Terminal - HTML</div>
+        <div id="output" class="terminal-output"></div>
+        <div class="terminal-input">
+            <input type="text" id="input" placeholder="Komut girin..." autofocus>
+            <button onclick="processInput()">Gönder</button>
+        </div>
     </div>
 
     <script>
         let customCommands = JSON.parse(localStorage.getItem('customCommands')) || {};
-
         const developerPassword = "1234";
 
-        document.getElementById('input').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                let command = event.target.value.trim().toLowerCase();
-                processCommand(command);
-                event.target.value = '';
-            }
+        // Açılışta otomatik olarak `help` komutunu çalıştır
+        document.addEventListener("DOMContentLoaded", () => {
+            autoRunHelp();
         });
 
-        function processCommand(command) {
+        function autoRunHelp() {
+            const output = document.getElementById('output');
+            output.innerHTML += `<div>> help</div>`;
+            output.innerHTML += "<div>Kullanılabilir Komutlar:</div>";
+            output.innerHTML += "<div>  - help: Bu menüyü gösterir.</div>";
+            output.innerHTML += "<div>  - clear: Terminali temizler.</div>";
+            output.innerHTML += "<div>  - geliştirici: Geliştirici menüsünü açar.</div>";
+        }
+
+        function processInput() {
+            const inputField = document.getElementById('input');
+            const command = inputField.value.trim().toLowerCase();
             const output = document.getElementById('output');
 
-            if (command === "exit") {
-                output.innerHTML += "<div>Terminal kapatılıyor...</div>";
-            }
-            else if (command === "help") {
+            if (command === "") return;
+
+            // Ekrana komutun yazılması
+            output.innerHTML += `<div>> ${command}</div>`;
+
+            if (command === "help") {
                 output.innerHTML += "<div>Kullanılabilir Komutlar:</div>";
                 output.innerHTML += "<div>  - help: Bu menüyü gösterir.</div>";
                 output.innerHTML += "<div>  - clear: Terminali temizler.</div>";
-                output.innerHTML += "<div>  - exit: Terminalden çıkmanıza olanak sağlar.</div>";
                 output.innerHTML += "<div>  - geliştirici: Geliştirici menüsünü açar.</div>";
-            }
-            else if (command === "clear") {
+            } else if (command === "clear") {
                 output.innerHTML = "";
-            }
-            else if (command === "geliştirici") {
+            } else if (command === "geliştirici") {
                 authenticate();
-            }
-            else if (customCommands[command]) {
+            } else if (customCommands[command]) {
                 output.innerHTML += `<div>${customCommands[command]}</div>`;
-            }
-            else {
+            } else {
                 output.innerHTML += `<div>Komut bulunamadı: ${command}</div>`;
             }
 
+            // Her komuttan sonra en alta kaydır
             output.scrollTop = output.scrollHeight;
+
+            // Giriş alanını temizle
+            inputField.value = "";
         }
 
         function authenticate() {
-            let password = prompt("Geliştirici menüsüne erişim için şifreyi girin:");
+            const password = prompt("Geliştirici menüsüne erişim için şifreyi girin:");
             if (password === developerPassword) {
-                output.innerHTML += "<div>Şifre doğru! Geliştirici menüsüne erişim sağlanıyor...</div>";
                 showDeveloperMenu();
             } else {
-                output.innerHTML += "<div>Yanlış şifre! Geliştirici menüsüne erişim reddedildi.</div>";
+                alert("Yanlış şifre!");
             }
         }
 
         function showDeveloperMenu() {
-            document.getElementById('developer-menu').style.display = 'block';
-        }
+            const commandName = prompt("Yeni komut ismini girin:");
+            const commandResponse = prompt(`${commandName} komutunun çıktısı ne olsun?`);
 
-        function exitDeveloperMenu() {
-            document.getElementById('developer-menu').style.display = 'none';
-        }
-
-        function addCommand() {
-            let commandName = prompt("Yeni komut ismini girin:");
-            let commandResponse = prompt(`${commandName} komutunun çıktısı ne olsun?`);
-            customCommands[commandName.toLowerCase()] = commandResponse;
-
-            localStorage.setItem('customCommands', JSON.stringify(customCommands));
-
-            alert(`'${commandName}' komutu başarıyla eklendi!`);
-        }
-
-        function viewCommands() {
-            let commandsList = "Mevcut Komutlar:\n";
-            for (let cmd in customCommands) {
-                commandsList += `${cmd}: ${customCommands[cmd]}\n`;
+            if (commandName && commandResponse) {
+                customCommands[commandName.toLowerCase()] = commandResponse;
+                localStorage.setItem('customCommands', JSON.stringify(customCommands));
+                alert(`'${commandName}' komutu başarıyla eklendi!`);
+            } else {
+                alert("Komut ekleme işlemi iptal edildi.");
             }
-            alert(commandsList);
         }
     </script>
-
 </body>
 </html>
