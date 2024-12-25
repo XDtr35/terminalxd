@@ -86,7 +86,6 @@
         let customCommands = JSON.parse(localStorage.getItem('customCommands')) || {};
         const developerPassword = "1234";
 
-        // Açılışta otomatik olarak `help` komutunu çalıştır
         document.addEventListener("DOMContentLoaded", () => {
             autoRunHelp();
         });
@@ -107,7 +106,6 @@
 
             if (command === "") return;
 
-            // Ekrana komutun yazılması
             output.innerHTML += `<div>> ${command}</div>`;
 
             if (command === "help") {
@@ -125,10 +123,7 @@
                 output.innerHTML += `<div>Komut bulunamadı: ${command}</div>`;
             }
 
-            // Her komuttan sonra en alta kaydır
             output.scrollTop = output.scrollHeight;
-
-            // Giriş alanını temizle
             inputField.value = "";
         }
 
@@ -142,15 +137,31 @@
         }
 
         function showDeveloperMenu() {
-            const commandName = prompt("Yeni komut ismini girin:");
-            const commandResponse = prompt(`${commandName} komutunun çıktısı ne olsun?`);
+            const action = prompt("Geliştirici menüsü:\n1. Yeni komut ekle\n2. Komut sil\nSeçiminizi yapın (1 veya 2):");
 
-            if (commandName && commandResponse) {
-                customCommands[commandName.toLowerCase()] = commandResponse;
-                localStorage.setItem('customCommands', JSON.stringify(customCommands));
-                alert(`'${commandName}' komutu başarıyla eklendi!`);
+            if (action === "1") {
+                const commandName = prompt("Yeni komut ismini girin:");
+                const commandResponse = prompt(`${commandName} komutunun çıktısı ne olsun?`);
+
+                if (commandName && commandResponse) {
+                    customCommands[commandName.toLowerCase()] = commandResponse;
+                    localStorage.setItem('customCommands', JSON.stringify(customCommands));
+                    alert(`'${commandName}' komutu başarıyla eklendi!`);
+                } else {
+                    alert("Komut ekleme işlemi iptal edildi.");
+                }
+            } else if (action === "2") {
+                const commandToDelete = prompt("Silmek istediğiniz komutun adını girin:");
+
+                if (customCommands[commandToDelete.toLowerCase()]) {
+                    delete customCommands[commandToDelete.toLowerCase()];
+                    localStorage.setItem('customCommands', JSON.stringify(customCommands));
+                    alert(`'${commandToDelete}' komutu başarıyla silindi!`);
+                } else {
+                    alert("Silmek istediğiniz komut bulunamadı.");
+                }
             } else {
-                alert("Komut ekleme işlemi iptal edildi.");
+                alert("Geçersiz seçim. Geliştirici menüsünden çıkılıyor.");
             }
         }
     </script>
